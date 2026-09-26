@@ -12,7 +12,7 @@ export const TOOLS = [
   {
     name: "list_leaves", domain: "hr",
     description: "List leave requests, optionally filtered by status.",
-    schema: z.object({ status: z.enum(["Pending", "Approved", "Rejected"]).optional() }),
+    schema: z.object({ status: z.enum(["Pending", "Approved", "Rejected"]).nullable().optional() }),
     run: async ({ status }) =>
       (await Leave.find(status ? { status } : {}).sort({ from: 1 }).lean())
         .map((l) => ({ employee: l.employee, type: l.type, from: day(l.from), to: day(l.to), status: l.status })),
@@ -30,7 +30,7 @@ export const TOOLS = [
   {
     name: "list_invoices", domain: "finance",
     description: "List invoices with totals. status: Paid, Unpaid (any not paid) or Overdue. Omit for all.",
-    schema: z.object({ status: z.enum(["Paid", "Unpaid", "Overdue"]).optional() }),
+    schema: z.object({ status: z.enum(["Paid", "Unpaid", "Overdue"]).nullable().optional() }),
     run: async ({ status }) => {
       const rows = (await Invoice.find().sort({ due: 1 }).lean()).map((i) => ({
         number: i.number, client: i.client, amount: i.amount, due: day(i.due), status: invStatus(i),
@@ -52,7 +52,7 @@ export const TOOLS = [
   {
     name: "list_projects", domain: "projects",
     description: "List projects with progress, owner and delay risk. Optionally filter by risk.",
-    schema: z.object({ risk: z.enum(["Low", "Medium", "High"]).optional() }),
+    schema: z.object({ risk: z.enum(["Low", "Medium", "High"]).nullable().optional() }),
     run: async ({ risk }) =>
       (await Project.find(risk ? { risk } : {}).lean()).map((p) => ({ name: p.name, status: p.status, progress: p.progress, risk: p.risk, owner: p.owner })),
   },
